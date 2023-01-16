@@ -132,7 +132,7 @@ resource "aws_instance" "bastion_host" {
         "Terraform" = "Yes"
     }
 }
-# ssh -i /Users/ableasdale/Documents/Creds/ableasdale-cflt.pem ec2-user@35.178.213.204
+
 resource "aws_security_group" "bastion_host" {
   vpc_id  = aws_vpc.prod-vpc.id
   egress = [
@@ -161,4 +161,8 @@ resource "aws_security_group" "bastion_host" {
      to_port          = 22
   }
   ]
+  tags = {
+    Name = "ableasdale-tf-BASTION-SG"
+    "Terraform" = "Yes"
+  }
 }
