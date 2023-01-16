@@ -71,3 +71,11 @@ resource "aws_subnet" "privatesubnet-2c" {
 
   depends_on = [aws_vpc.prod-vpc]
 }
+
+resource "aws_internet_gateway" "simple_igw" {
+    vpc_id = aws_vpc.prod-vpc.id
+
+    tags = {
+        Name = "ableasdale-tf-igw"
+    }
+}
