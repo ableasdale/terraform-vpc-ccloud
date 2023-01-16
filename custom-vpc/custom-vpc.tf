@@ -117,3 +117,48 @@ resource "aws_route" "r6" {
   gateway_id                = aws_internet_gateway.vpc-igw.id
   depends_on                = [aws_route_table.prod-public-rtable]
 }
+
+# Create BASTION host
+resource "aws_instance" "bastion_host" {
+    ami = "ami-084e8c05825742534" # Amazon Linux 2 AMI (64bit x86)
+    instance_type = "t2.micro"
+    key_name = "ableasdale-cflt"
+    subnet_id = aws_subnet.privatesubnet-2a[3].id
+
+    vpc_security_group_ids = [aws_security_group.bastion_host.id]
+
+    tags = {
+        Name = "ableasdale-tf-BASTION"
+        "Terraform" = "Yes"
+    }
+}
+# ssh -i /Users/ableasdale/Documents/Creds/ableasdale-cflt.pem ec2-user@35.178.213.204
+resource "aws_security_group" "bastion_host" {
+  vpc_id  = aws_vpc.prod-vpc.id
+  egress = [
+    {
+      cidr_blocks      = [ "0.0.0.0/0", ]
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = ["::/0"]
+      prefix_list_ids  = []
+      protocol         = "-1"
+      security_groups  = []
+      self             = false
+      to_port          = 0
+    }
+  ]
+ ingress                = [
+   {
+     cidr_blocks      = [ "0.0.0.0/0", ]
+     description      = ""
+     from_port        = 22
+     ipv6_cidr_blocks = ["::/0"]
+     prefix_list_ids  = []
+     protocol         = "tcp"
+     security_groups  = []
+     self             = false
+     to_port          = 22
+  }
+  ]
+}

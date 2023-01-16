@@ -26,13 +26,20 @@ After initialization, run `terraform plan` then `terraform apply` to create the 
 ### Attempt to ssh to the instance
 
 ```bash
-ssh -i yourkey.pem ubuntu@18.132.245.128
+ssh -i yourkey.pem ubuntu@PUBLIC_IP_ADDR
 ```
 
 When you're done, run `terraform destroy` to clean-up.
 
+## Create a VPC
 
+The `custom-vpc` directory will create a VPC with Public and Private subnets and will install a Bastion host in the first AZ in the public subnet
 
+### Attempt to ssh to the instance
+
+```bash
+ssh -i yourkey.pem ec2-user@PUBLIC_IP_ADDR
+```
 
 ## TODO - need aws cli?  confluent cli?  Visual Studio plugins?
 
