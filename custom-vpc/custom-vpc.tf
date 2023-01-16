@@ -20,6 +20,7 @@ resource "aws_subnet" "privatesubnet-2a" {
 
   ipv6_cidr_block = "${cidrsubnet(aws_vpc.prod-vpc.ipv6_cidr_block, 8, count.index + 1)}"
   assign_ipv6_address_on_creation = true
+  map_public_ip_on_launch = "${count.index == 3 ? true : false}" 
 
   tags = {
     Name = "ableasdale-tf-privatesubnet-${count.index + 1}"
@@ -37,6 +38,7 @@ resource "aws_subnet" "privatesubnet-2b" {
 
   ipv6_cidr_block = "${cidrsubnet(aws_vpc.prod-vpc.ipv6_cidr_block, 8, count.index + 5)}"
   assign_ipv6_address_on_creation = true
+  map_public_ip_on_launch = "${count.index == 3 ? true : false}" 
 
   tags = {
     Name = "ableasdale-tf-privatesubnet-${count.index + 1}"
@@ -54,6 +56,7 @@ resource "aws_subnet" "privatesubnet-2c" {
 
   ipv6_cidr_block = "${cidrsubnet(aws_vpc.prod-vpc.ipv6_cidr_block, 8, count.index + 10)}"
   assign_ipv6_address_on_creation = true
+  map_public_ip_on_launch = "${count.index == 3 ? true : false}" 
 
   tags = {
     Name = "ableasdale-tf-privatesubnet-${count.index + 1}"
@@ -62,6 +65,7 @@ resource "aws_subnet" "privatesubnet-2c" {
 
   depends_on = [aws_vpc.prod-vpc]
 }
+
 
 # Create AWS Internet GateWay (IGW)
 resource "aws_internet_gateway" "vpc-igw" {
@@ -97,4 +101,19 @@ resource "aws_route_table_association" "public-web-2b" {
 resource "aws_route_table_association" "public-web-2c" {
   subnet_id = aws_subnet.privatesubnet-2c[3].id
   route_table_id = aws_route_table.prod-public-rtable.id
+}
+
+# Create some routes
+resource "aws_route" "r" {
+  route_table_id            = aws_route_table.prod-public-rtable.id
+  destination_cidr_block    = "0.0.0.0/0"
+  gateway_id                = aws_internet_gateway.vpc-igw.id
+  depends_on                = [aws_route_table.prod-public-rtable]
+}
+
+resource "aws_route" "r6" {
+  route_table_id              = aws_route_table.prod-public-rtable.id
+  destination_ipv6_cidr_block = "::/0"
+  gateway_id                = aws_internet_gateway.vpc-igw.id
+  depends_on                = [aws_route_table.prod-public-rtable]
 }
