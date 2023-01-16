@@ -1,6 +1,6 @@
 # terraform-vpc-ccloud
-Setting up a VPC in Terraform and peering it with Confluent Cloud
 
+Setting up a VPC in Terraform and peering it with Confluent Cloud
 
 ## Getting Started
 
@@ -22,6 +22,12 @@ terraform init
 ```
 
 After initialization, run `terraform plan` then `terraform apply` to create the instance.
+
+### Attempt to ssh to the instance
+
+```bash
+ssh -i yourkey.pem ubuntu@18.132.245.128
+```
 
 When you're done, run `terraform destroy` to clean-up.
 
