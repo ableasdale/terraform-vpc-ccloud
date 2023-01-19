@@ -24,10 +24,9 @@ resource "aws_subnet" "privatesubnet-2a" {
   map_public_ip_on_launch = "${count.index == 3 ? true : false}" 
 
   tags = {
-    Name = "ableasdale-tf-privatesubnet-${count.index + 1}"
+    Name = "ableasdale-tf-privatesubnet-${count.index + 1}-a"
     AZ   = "eu-west-2a"
   }
-
   depends_on = [aws_vpc.prod-vpc]
 }
 
@@ -42,10 +41,9 @@ resource "aws_subnet" "privatesubnet-2b" {
   map_public_ip_on_launch = "${count.index == 3 ? true : false}" 
 
   tags = {
-    Name = "ableasdale-tf-privatesubnet-${count.index + 1}"
+    Name = "ableasdale-tf-privatesubnet-${count.index + 1}-b"
     AZ   = "eu-west-2b"
   }
-
   depends_on = [aws_vpc.prod-vpc]
 }
 
@@ -60,13 +58,11 @@ resource "aws_subnet" "privatesubnet-2c" {
   map_public_ip_on_launch = "${count.index == 3 ? true : false}" 
 
   tags = {
-    Name = "ableasdale-tf-privatesubnet-${count.index + 1}"
+    Name = "ableasdale-tf-privatesubnet-${count.index + 1}-c"
     AZ   = "eu-west-2c"
   }
-
   depends_on = [aws_vpc.prod-vpc]
 }
-
 
 # Create AWS Internet GateWay (IGW)
 resource "aws_internet_gateway" "vpc-igw" {
@@ -182,7 +178,6 @@ resource "aws_nat_gateway" "nat-gw-2a" {
   tags = {
     Name = "ableasdale-tf-nat-gw-2a"
   }
-
   # To ensure proper ordering, it is recommended to add an explicit dependency on the Internet Gateway for the VPC.
   depends_on = [aws_internet_gateway.vpc-igw]
 }
@@ -217,4 +212,109 @@ resource "aws_nat_gateway" "nat-gw-2c" {
     Name = "ableasdale-tf-nat-gw-2c"
   }
   depends_on = [aws_internet_gateway.vpc-igw]
+}
+
+# Create Route Table for private subnets in eu-west-2a
+resource "aws_route_table" "prod-private-rtable-2a" {
+  vpc_id = aws_vpc.prod-vpc.id
+
+  tags = {
+    Name = "ableasdale-tf-private-rtable-2a"
+  }
+}
+
+# Create route for private subnets in eu-west-2a
+resource "aws_route" "prod-private-rtable-route-2a" {
+  route_table_id            = aws_route_table.prod-private-rtable-2a.id
+  destination_cidr_block    = "0.0.0.0/0"
+  gateway_id                = aws_nat_gateway.nat-gw-2a.id
+  depends_on                = [aws_route_table.prod-private-rtable-2a]
+}
+
+# Create Route Table for private subnets in eu-west-2b
+resource "aws_route_table" "prod-private-rtable-2b" {
+  vpc_id = aws_vpc.prod-vpc.id
+
+  tags = {
+    Name = "ableasdale-tf-private-rtable-2b"
+  }
+}
+
+# Create route for private subnets in eu-west-2b
+resource "aws_route" "prod-private-rtable-route-2b" {
+  route_table_id            = aws_route_table.prod-private-rtable-2b.id
+  destination_cidr_block    = "0.0.0.0/0"
+  gateway_id                = aws_nat_gateway.nat-gw-2b.id
+  depends_on                = [aws_route_table.prod-private-rtable-2b]
+}
+
+# Create Route Table for private subnets in eu-west-2c
+resource "aws_route_table" "prod-private-rtable-2c" {
+  vpc_id = aws_vpc.prod-vpc.id
+
+  tags = {
+    Name = "ableasdale-tf-private-rtable-2c"
+  }
+}
+
+# Create route for private subnets in eu-west-2c
+resource "aws_route" "prod-private-rtable-route-2c" {
+  route_table_id            = aws_route_table.prod-private-rtable-2c.id
+  destination_cidr_block    = "0.0.0.0/0"
+  gateway_id                = aws_nat_gateway.nat-gw-2c.id
+  depends_on                = [aws_route_table.prod-private-rtable-2c]
+}
+
+# Associate RT with ableasdale-tf-privatesubnet-1 in eu-west-2a
+resource "aws_route_table_association" "prod-private-rtable-2a0" {
+  subnet_id = aws_subnet.privatesubnet-2a[0].id
+  route_table_id = aws_route_table.prod-private-rtable-2a.id
+}
+
+# Associate RT with ableasdale-tf-privatesubnet-2 in eu-west-2a
+resource "aws_route_table_association" "prod-private-rtable-2a1" {
+  subnet_id = aws_subnet.privatesubnet-2a[1].id
+  route_table_id = aws_route_table.prod-private-rtable-2a.id
+}
+
+# Associate RT with ableasdale-tf-privatesubnet-3 in eu-west-2a
+resource "aws_route_table_association" "prod-private-rtable-2a2" {
+  subnet_id = aws_subnet.privatesubnet-2a[2].id
+  route_table_id = aws_route_table.prod-private-rtable-2a.id
+}
+
+# Associate RT with ableasdale-tf-privatesubnet-1 in eu-west-2b
+resource "aws_route_table_association" "prod-private-rtable-2b0" {
+  subnet_id = aws_subnet.privatesubnet-2b[0].id
+  route_table_id = aws_route_table.prod-private-rtable-2b.id
+}
+
+# Associate RT with ableasdale-tf-privatesubnet-2 in eu-west-2b
+resource "aws_route_table_association" "prod-private-rtable-2b1" {
+  subnet_id = aws_subnet.privatesubnet-2b[1].id
+  route_table_id = aws_route_table.prod-private-rtable-2b.id
+}
+
+# Associate RT with ableasdale-tf-privatesubnet-3 in eu-west-2b
+resource "aws_route_table_association" "prod-private-rtable-2b2" {
+  subnet_id = aws_subnet.privatesubnet-2b[2].id
+  route_table_id = aws_route_table.prod-private-rtable-2b.id
+}
+
+# Associate RT with ableasdale-tf-privatesubnet-1 in eu-west-2c
+resource "aws_route_table_association" "prod-private-rtable-2c0" {
+  subnet_id = aws_subnet.privatesubnet-2c[0].id
+  route_table_id = aws_route_table.prod-private-rtable-2c.id
+}
+
+# Associate RT with ableasdale-tf-privatesubnet-2 in eu-west-2c
+resource "aws_route_table_association" "prod-private-rtable-2c1" {
+  subnet_id = aws_subnet.privatesubnet-2c[1].id
+  route_table_id = aws_route_table.prod-private-rtable-2c.id
+}
+
+# Associate RT with ableasdale-tf-privatesubnet-3 in eu-west-2c
+resource "aws_route_table_association" "prod-private-rtable-2c2" {
+  subnet_id = aws_subnet.privatesubnet-2c[2].id
+  route_table_id = aws_route_table.prod-private-rtable-2c.id
 }
