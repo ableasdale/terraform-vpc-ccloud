@@ -2,6 +2,7 @@ provider "aws" {
     region = "eu-west-2"
 }
 
+# Create /16 VPC
 resource "aws_vpc" "prod-vpc" {
   cidr_block       = "10.16.0.0/16"
   assign_generated_ipv6_cidr_block = true
@@ -165,4 +166,55 @@ resource "aws_security_group" "bastion_host" {
     Name = "ableasdale-tf-BASTION-SG"
     "Terraform" = "Yes"
   }
+}
+
+# Create a NAT Gateway with an Elastic IP in eu-west-2a
+resource "aws_eip" "nat-gw-2a" {
+  vpc      = true
+  depends_on = [aws_internet_gateway.vpc-igw]
+
+}
+
+resource "aws_nat_gateway" "nat-gw-2a" {
+  allocation_id = aws_eip.nat-gw-2a.id
+  subnet_id = aws_subnet.privatesubnet-2a[3].id
+
+  tags = {
+    Name = "ableasdale-tf-nat-gw-2a"
+  }
+
+  # To ensure proper ordering, it is recommended to add an explicit dependency on the Internet Gateway for the VPC.
+  depends_on = [aws_internet_gateway.vpc-igw]
+}
+
+# Create a NAT Gateway with an Elastic IP in eu-west-2b
+resource "aws_eip" "nat-gw-2b" {
+  vpc      = true
+  depends_on = [aws_internet_gateway.vpc-igw]
+}
+
+resource "aws_nat_gateway" "nat-gw-2b" {
+  allocation_id = aws_eip.nat-gw-2b.id
+  subnet_id = aws_subnet.privatesubnet-2b[3].id
+
+  tags = {
+    Name = "ableasdale-tf-nat-gw-2b"
+  }
+  depends_on = [aws_internet_gateway.vpc-igw]
+}
+
+# Create a NAT Gateway with an Elastic IP in eu-west-2c
+resource "aws_eip" "nat-gw-2c" {
+  vpc      = true
+  depends_on = [aws_internet_gateway.vpc-igw]
+}
+
+resource "aws_nat_gateway" "nat-gw-2c" {
+  allocation_id = aws_eip.nat-gw-2c.id
+  subnet_id = aws_subnet.privatesubnet-2c[3].id
+
+  tags = {
+    Name = "ableasdale-tf-nat-gw-2c"
+  }
+  depends_on = [aws_internet_gateway.vpc-igw]
 }
