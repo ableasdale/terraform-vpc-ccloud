@@ -1,0 +1,5 @@
+export CONFLUENT_CLOUD_API_KEY="*****"
+export CONFLUENT_CLOUD_API_SECRET="****" 
+export KAFKA_API_KEY=""
+export KAFKA_API_SECRET=""
+export KAFKA_REST_ENDPOINT=""
